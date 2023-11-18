@@ -2,7 +2,7 @@
   <v-app>
     <v-container fluid fill-height>
       <v-row align="center" justify="center">
-        <v-col cols="12" sm="8" md="6">
+        <v-col cols="12">
           <!-- Rounded box with medium size -->
           <v-card class="rounded-box" elevation="12">
             <!-- Three horizontal cards -->
@@ -24,6 +24,7 @@
 
 <script>
 export default {
+  
   data() {
     return {
       cards: [
