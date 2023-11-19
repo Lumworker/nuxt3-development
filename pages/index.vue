@@ -2,26 +2,17 @@
   <v-app>
     <v-container>
       <v-row v-if="ticketStore.length > 0">
-        <ticket-card :ticketStore="ticketStore" />
+        <ticket-card :ticketStore="ticketStore" :click-select-ticket-store="clickSelectTicketStore" />
       </v-row>
       <v-row v-else>
         <v-col>
           <p>No tickets available.</p>
         </v-col>
       </v-row>
-      <!-- <v-row>
-        <v-col v-for="(ticket, index) in ticketStore" :key="index" cols="12" sm="6" md="4" lg="3">
-          <v-card :title="ticket.ticketType" prepend-icon="mdi-ticket " append-icon="mdi-open-in-new">
-            <div class="ml-5 mb-3">
-              <v-card-subtitle>Minimum Buying: {{ ticket.miniMumBuying }}</v-card-subtitle>
-              <v-card-subtitle>Limit Per Day: {{ ticket.limitPerDay }}</v-card-subtitle>
-              <v-card-subtitle>Price: {{ ticket.Price }}</v-card-subtitle>
-            </div>
-          </v-card>
-        </v-col>
-      </v-row> -->
+
     </v-container>
     <add-ticket-dialog :get-ticket-store-function="getTicketStore" />
+    <add-transaction-modal :dialog="isModalOpen" @close="closeModal" />
 
 
   </v-app>
@@ -31,6 +22,7 @@
 import { onMounted, onBeforeUnmount, ref } from 'vue';
 import AddTicketDialog from '@/components/AddTicketDialog.vue';
 import TicketCard from '@/components/TicketCard.vue';
+import AddTransactionModal from '@/components/AddTransactionModal.vue';
 
 onMounted(async () => {
   await getTicketStore();
@@ -63,6 +55,19 @@ const getTicketStore = async (): Promise<any> => {
   } catch (error) {
     console.error("Error fetching data:", error);
   }
+};
+
+const isModalOpen = ref(false);
+
+const clickSelectTicketStore = (ticket: Object) => {
+  console.log("🚀 ~  index ticket:", ticket)
+  // Handle the click event here
+  // Open the modal
+  isModalOpen.value = true;
+};
+const closeModal = () => {
+  // Close the modal
+  isModalOpen.value = false;
 };
 
 </script>

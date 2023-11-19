@@ -1,6 +1,7 @@
 <template>
     <v-col v-for="(ticket, index) in ticketStore" :key="index" :cols="colSize" sm="6" md="4" lg="3">
-        <v-card :title="ticket.ticketType" prepend-icon="mdi-ticket " append-icon="mdi-open-in-new">
+        <v-card :title="ticket.ticketType" prepend-icon="mdi-ticket " append-icon="mdi-open-in-new"
+            @click="handleCardClick(ticket)">
             <div class="ml-5 mb-3">
                 <v-card-subtitle>Minimum Buying: {{ ticket.miniMumBuying }}</v-card-subtitle>
                 <v-card-subtitle>Limit Per Day: {{ ticket.limitPerDay }}</v-card-subtitle>
@@ -11,10 +12,14 @@
 </template>
 
 <script setup>
-import { toRefs, defineProps } from 'vue';
+import { toRefs, defineProps, defineEmits } from 'vue';
 
 const colSize = "12"; // Adjust this value based on your layout requirements
 
-const props = defineProps({ ticketStore: Object });
+const props = defineProps({ ticketStore: Object, clickSelectTicketStore: { type: Function } });
 const { ticketStore } = toRefs(props);
+
+const handleCardClick = (ticket) => {
+    props.clickSelectTicketStore(ticket)
+};
 </script>
