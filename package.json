@@ -12,6 +12,7 @@
   "devDependencies": {
     "@mdi/js": "^7.3.67",
     "@nuxt/devtools": "latest",
+    "@nuxtjs/tailwindcss": "^6.9.5",
     "nuxt": "^3.8.1",
     "vite-plugin-vuetify": "^1.0.2",
     "vue": "^3.3.8",
@@ -22,6 +23,7 @@
     "@mdi/font": "^7.3.67",
     "@nuxtjs/firebase": "^8.2.2",
     "firebase": "^10.6.0",
-    "h3": "^1.8.2"
+    "h3": "^1.8.2",
+    "sass": "^1.69.5"
   }
 }
