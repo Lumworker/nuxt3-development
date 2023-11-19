@@ -12,7 +12,7 @@
 
     </v-container>
     <add-ticket-dialog :get-ticket-store-function="getTicketStore" />
-    <add-transaction-modal :dialog="isModalOpen" @close="closeModal" />
+    <add-transaction-modal :dialog="isModalOpen" :close-modal-transaction="closeModalTransaction" />
 
 
   </v-app>
@@ -64,8 +64,9 @@ const clickSelectTicketStore = (ticket: Object) => {
   // Handle the click event here
   // Open the modal
   isModalOpen.value = true;
+  console.log(isModalOpen.value)
 };
-const closeModal = () => {
+const closeModalTransaction = () => {
   // Close the modal
   isModalOpen.value = false;
 };
