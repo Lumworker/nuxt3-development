@@ -9,13 +9,22 @@ export default defineNuxtPlugin(nuxtApp => {
     ssr: true,
     components,
     directives,
-     icons: {
-    defaultSet: 'mdi',
-    aliases,
-    sets: {
-      mdi,
+    icons: {
+      defaultSet: 'mdi',
+      aliases,
+      sets: {
+        mdi,
+      },
     },
-  },
+    theme: {
+      themes: {
+        light: {
+          primary: '#EC8F5E', // Set your primary color
+          secondary: '#F3B664', // Set your primary color
+          // Add more theme colors if needed
+        },
+      },
+    },
   })
 
   nuxtApp.vueApp.use(vuetify)
