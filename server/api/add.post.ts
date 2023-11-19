@@ -3,7 +3,7 @@ import { add } from "../lib/firestore";
 
 export default defineEventHandler(async (event) => {
   try {
-  console.log("🚀 ~ event:", event)
+  // console.log("🚀 ~ event:", event)
 
     const query = getQuery(event);
     const body = await readBody(event);

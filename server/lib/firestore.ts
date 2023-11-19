@@ -15,7 +15,7 @@ import { firestoreDb } from "./firebase";
 
 export const queryByCollection = async (col: string) => {
   // @ts-ignore
-  const colRef = collection(firestoreDb, 'ticketStore');
+  const colRef = collection(firestoreDb, col);
 
   const snapshot = await getDocs(colRef);
 
