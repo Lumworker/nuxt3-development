@@ -12,9 +12,9 @@
 
     </v-container>
     <add-ticket-dialog :get-ticket-store-function="getTicketStore" />
-    <add-transaction-modal :dialog="isModalOpen" :close-modal-transaction="closeModalTransaction" />
+    <add-transaction-modal :dialog="isModalAddTransOpen" :onclose-modal-transaction="oncloseModalTransaction" />
 
-    <template>
+    <div>
       <v-table fixed-header height="300px">
         <thead>
           <tr>
@@ -41,7 +41,7 @@
           </tr>
         </tbody>
       </v-table>
-    </template>
+    </div>
     <!-- {{ ticketTransaction }} -->
   </v-app>
 </template>
@@ -70,8 +70,14 @@ interface TicketType {
   Price: number;
 }
 ;
+interface TicketSelected {
+  [x: string]: any;
+  ticketSelected: any;
+}
+;
 
 const ticketStore = ref<TicketType[]>([]);
+const ticketSelected = ref<TicketSelected>({ ticketSelected: null });
 const ticketTransaction = ref<TicketType[]>([]);
 const getTicketStore = async (): Promise<any> => {
   try {
@@ -103,18 +109,17 @@ const getTicketTransaction = async (): Promise<any> => {
   }
 };
 
-const isModalOpen = ref(false);
+const isModalAddTransOpen = ref(false);
 
+//finction click add transaction
 const clickSelectTicketStore = (ticket: Object) => {
-  console.log("🚀 ~  index ticket:", ticket)
-  // Handle the click event here
-  // Open the modal
-  isModalOpen.value = true;
-  console.log(isModalOpen.value)
+  ticketSelected.value = { ticketSelected: ticket };
+  isModalAddTransOpen.value = true;
 };
-const closeModalTransaction = () => {
+
+const oncloseModalTransaction = () => {
   // Close the modal
-  isModalOpen.value = false;
+  isModalAddTransOpen.value = false;
 };
 
 </script>
