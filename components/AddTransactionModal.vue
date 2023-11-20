@@ -75,7 +75,7 @@ onMounted(() => {
     ticketType.value.value = 'A';
     countTicket.value.value = 1;
     price.value.value = 0;
-    dateAt.value.value = "12";
+    dateAt.value.value = new Date();
 });
 
 watch(() => countTicket.value.value, () => {

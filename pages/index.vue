@@ -1,17 +1,18 @@
 <template #default>
   <v-app>
+    <h1 class="text-4xl font-extrabold">Click Ticket To Add transction</h1>
     <v-container>
       <v-row v-if="ticketStore.length > 0">
         <ticket-card :ticketStore="ticketStore" :click-select-ticket-store="clickSelectTicketStore" />
       </v-row>
       <v-row v-else>
-        <v-col>
-          <p>No tickets available.</p>
-        </v-col>
+        <p>No tickets available.</p>
+      </v-row>
+      <v-row>
+        <add-ticket-dialog :get-ticket-store-function="getTicketStore" />
       </v-row>
 
     </v-container>
-    <add-ticket-dialog :get-ticket-store-function="getTicketStore" />
     <add-transaction-modal :dialog="isModalAddTransOpen" :onclose-modal-transaction="oncloseModalTransaction" />
 
     <div>

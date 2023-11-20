@@ -1,8 +1,12 @@
 <template>
     <div class="text-center">
-        <v-btn color="primary" @click="dialog = true">
-            addMasterTicketStore
+        <v-btn prepend-icon=" mdi-plus-thick" color="success" @click="dialog = true">
+            <template v-slot:prepend>
+                <v-icon @click="dialog = true"></v-icon>
+            </template>
+            ADD TICKET
         </v-btn>
+
 
         <v-dialog v-model="dialog" width="auto">
             <v-card>
