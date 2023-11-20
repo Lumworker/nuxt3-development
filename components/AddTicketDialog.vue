@@ -4,7 +4,7 @@
             <template v-slot:prepend>
                 <v-icon @click="dialog = true"></v-icon>
             </template>
-            ADD TICKET
+            ADD TYPE TICKET
         </v-btn>
 
 

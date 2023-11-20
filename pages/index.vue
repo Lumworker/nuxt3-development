@@ -17,6 +17,8 @@
       :ticketSelected="ticketSelected" :getTicketTransaction="getTicketTransaction" />
 
     <div>
+
+      <h1 class="text-4xl font-extrabold">Transction</h1>
       <v-table fixed-header height="300px">
         <thead>
           <tr>
@@ -37,7 +39,7 @@
         <tbody>
           <tr v-for="item in ticketTransaction" :key="item.id">
             <td>{{ item.buyerName }}</td>
-            <td>{{ item.buyerDate }}</td>
+            <td>{{ dayjs(item.buyerDate).format('YYYY-MM-DD HH:mm:ss') }}</td>
             <td>{{ item.ticketType }}</td>
             <td>{{ item.amout }}</td>
           </tr>
@@ -53,6 +55,7 @@ import { onMounted, onBeforeUnmount, ref } from 'vue';
 import AddTicketDialog from '@/components/AddTicketDialog.vue';
 import TicketCard from '@/components/TicketCard.vue';
 import AddTransactionModal from '@/components/AddTransactionModal.vue';
+import dayjs from 'dayjs';
 
 onMounted(async () => {
   await getTicketStore();
