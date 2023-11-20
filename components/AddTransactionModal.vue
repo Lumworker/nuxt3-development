@@ -10,8 +10,8 @@
                     </h1>
                     <v-row>
                         <v-col v class="md-6 xs-12 w-full">
-                            <v-text-field variant="outlined" v-model="name.value.value"
-                                :error-messages="name.errorMessage.value" label="Name"></v-text-field>
+                            <v-text-field variant="outlined" v-model="buyerName.value.value"
+                                :error-messages="buyerName.errorMessage.value" label="buyerName"></v-text-field>
                         </v-col>
                         <v-col v class="md-6 xs-12 w-full">
                             <v-text-field variant="outlined" v-model="ticketType.value.value"
@@ -20,12 +20,12 @@
                     </v-row>
                     <v-row>
                         <v-col v class="md-6 xs-12 w-full">
-                            <v-text-field variant="outlined" v-model="countTicket.value.value"
-                                :error-messages="countTicket.errorMessage.value" label="countTicket"></v-text-field>
+                            <v-text-field variant="outlined" v-model="amout.value.value"
+                                :error-messages="amout.errorMessage.value" label="amout"></v-text-field>
                         </v-col>
                         <v-col v class="md-6 xs-12 w-full">
-                            <v-text-field variant="outlined" v-model="dateAt.value.value"
-                                :error-messages="dateAt.errorMessage.value" label="dateAt"></v-text-field>
+                            <v-text-field variant="outlined" v-model="buyerDate.value.value"
+                                :error-messages="buyerDate.errorMessage.value" label="buyerDate"></v-text-field>
                         </v-col>
                     </v-row>
                     <v-row>
@@ -59,56 +59,86 @@ import { useField, useForm, ErrorMessage } from 'vee-validate'
 const { handleSubmit } = useForm({})
 
 // Props
-const props = defineProps({ dialog: Boolean, oncloseModalTransaction: { type: Function as PropType<() => void> }, ticketSelected: Object });
+const props = defineProps({
+    dialog: Boolean,
+    oncloseModalTransaction: { type: Function as PropType<() => void> },
+    getTicketTransaction: { type: Function as PropType<() => void> },
+    ticketSelected: Object
+});
 const { dialog, ticketSelected } = toRefs(props);
 
 const loading = ref(false);
 // Form fields without default values
-const name = useField('name');
+const buyerName = useField('buyerName');
 const ticketType = useField('ticketType');
-const countTicket = useField('countTicket'); // Example default value
-const dateAt = useField('dateAt'); // Example default value
+const amout = useField('amout'); // Example default value
+const buyerDate = useField('buyerDate'); // Example default value
 const price = useField('price'); // Example default value
 
 
 
-watch(() => countTicket.value.value, () => {
-    price.value.value = updatePrice(countTicket.value.value as number, props.ticketSelected?.Price);
+watch(() => amout.value.value, () => {
+    price.value.value = updatePrice(amout.value.value as number, props.ticketSelected?.Price);
 });
 watch(() => props.ticketSelected, () => {
     console.log("🚀 ~ ticketSelected:", props.ticketSelected)
-    name.value.value = 'John Doe';
+    buyerName.value.value = 'John Doe';
     ticketType.value.value = props.ticketSelected?.ticketType || '';
-    countTicket.value.value = props.ticketSelected?.miniMumBuying || null;
+    amout.value.value = props.ticketSelected?.miniMumBuying || null;
     price.value.value = updatePrice(props.ticketSelected?.miniMumBuying, props.ticketSelected?.Price) || 0;
-    dateAt.value.value = props.ticketSelected?.dateAt || new Date();
+    buyerDate.value.value = props.ticketSelected?.buyerDate || new Date();
 });
 
 onMounted(() => {
-    name.value.value = 'John Doe';
+    buyerName.value.value = 'John Doe';
     ticketType.value.value = props.ticketSelected?.ticketType || '';
-    countTicket.value.value = props.ticketSelected?.miniMumBuying || null;
+    amout.value.value = props.ticketSelected?.miniMumBuying || null;
     price.value.value = updatePrice(props.ticketSelected?.miniMumBuying, props.ticketSelected?.Price) || 0;
-    dateAt.value.value = props.ticketSelected?.dateAt || new Date();
+    buyerDate.value.value = props.ticketSelected?.buyerDate || new Date();
 })
 
 const updatePrice = (counter: number = 0, price: number = 0) => {
     return counter * price;
 };
 
+const addTicketTransaction = async (payload: object): Promise<any> => {
 
-// function onInvalidSubmit({ values, errors, results }: any) {
-//     console.log('onInvalidSubmit():');
-//     console.log(values);
-//     console.log('Errors: ', errors);
-//     console.log('Detailed results: ', results);
-// }
+    loading.value = true;
+    try {
+        // Validate form fields
+        // if (!validateForm()) {
+        //     console.error("Form validation failed");
+        //     return;
+        // }
 
+        const { result } = await $fetch("/api/add?col=ticketTransaction", {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+        handleOutsideClick();
+        getTicketTransaction();
+        loading.value = false;
+        return result;
+    } catch (error) {
+        loading.value = false;
+        console.log((error as Error).message);
+    }
+};
 
 
 const submit = handleSubmit(async (values) => {
-    console.log("🚀 ~ countTicket :", values)
-    // loading.value = true;
+    console.log("🚀 ~ amout :", values)
+    if (values) {
+        const payload = {
+            buyerName: values.buyerName,
+            amout: values.amout,
+            price: values.price,
+            ticketType: values.ticketType,
+            buyerDate: values.buyerDate,
+            id: values.buyerDate + values.price,
+        }
+        addTicketTransaction(payload)
+    }
 
 });
 
@@ -116,6 +146,12 @@ const submit = handleSubmit(async (values) => {
 const handleOutsideClick = () => {
     if (props.oncloseModalTransaction) {
         props.oncloseModalTransaction();
+    }
+};
+//for type script support
+const getTicketTransaction = () => {
+    if (props.getTicketTransaction) {
+        props.getTicketTransaction();
     }
 };
 

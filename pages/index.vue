@@ -14,7 +14,7 @@
 
     </v-container>
     <add-transaction-modal :dialog="isModalAddTransOpen" :onclose-modal-transaction="oncloseModalTransaction"
-      :ticketSelected="ticketSelected" />
+      :ticketSelected="ticketSelected" :getTicketTransaction="getTicketTransaction" />
 
     <div>
       <v-table fixed-header height="300px">
