@@ -22,6 +22,7 @@
   "dependencies": {
     "@mdi/font": "^7.3.67",
     "@nuxtjs/firebase": "^8.2.2",
+    "dayjs": "^1.11.10",
     "firebase": "^10.6.0",
     "h3": "^1.8.2",
     "sass": "^1.69.5",
