@@ -13,7 +13,8 @@
       </v-row>
 
     </v-container>
-    <add-transaction-modal :dialog="isModalAddTransOpen" :onclose-modal-transaction="oncloseModalTransaction" />
+    <add-transaction-modal :dialog="isModalAddTransOpen" :onclose-modal-transaction="oncloseModalTransaction"
+      :ticketSelected="ticketSelected" />
 
     <div>
       <v-table fixed-header height="300px">
@@ -113,8 +114,9 @@ const getTicketTransaction = async (): Promise<any> => {
 const isModalAddTransOpen = ref(false);
 
 //finction click add transaction
-const clickSelectTicketStore = (ticket: Object) => {
-  ticketSelected.value = { ticketSelected: ticket };
+const clickSelectTicketStore = (ticket: any) => {
+  ticketSelected.value = ticket;
+  // console.log("🚀 ~ ticketSelected:", ticketSelected.value)
   isModalAddTransOpen.value = true;
 };
 

@@ -2,6 +2,7 @@
 <template>
     <v-dialog v-model="dialog" fluid max-width="700" :persistent="false" @click:outside="handleOutsideClick()">
         <v-card>
+            {{ ticketSelected }}
             <form @submit.prevent="submit">
                 <v-container class="m-10">
                     <h1 class="text-3xl font-bold underline mb-3">
@@ -58,8 +59,8 @@ import { useField, useForm, ErrorMessage } from 'vee-validate'
 const { handleSubmit } = useForm({})
 
 // Props
-const props = defineProps({ dialog: Boolean, oncloseModalTransaction: { type: Function as PropType<() => void> } });
-const { dialog } = toRefs(props);
+const props = defineProps({ dialog: Boolean, oncloseModalTransaction: { type: Function as PropType<() => void> }, ticketSelected: Object });
+const { dialog, ticketSelected } = toRefs(props);
 
 const loading = ref(false);
 // Form fields without default values
@@ -69,35 +70,44 @@ const countTicket = useField('countTicket'); // Example default value
 const dateAt = useField('dateAt'); // Example default value
 const price = useField('price'); // Example default value
 
-onMounted(() => {
-    // Set default values for the form fields
-    name.value.value = 'John Doe';
-    ticketType.value.value = 'A';
-    countTicket.value.value = 1;
-    price.value.value = 0;
-    dateAt.value.value = new Date();
-});
+
 
 watch(() => countTicket.value.value, () => {
-    updatePrice();
+    price.value.value = updatePrice(countTicket.value.value as number, props.ticketSelected?.Price);
+});
+watch(() => props.ticketSelected, () => {
+    console.log("🚀 ~ ticketSelected:", props.ticketSelected)
+    name.value.value = 'John Doe';
+    ticketType.value.value = props.ticketSelected?.ticketType || '';
+    countTicket.value.value = props.ticketSelected?.miniMumBuying || null;
+    price.value.value = updatePrice(props.ticketSelected?.miniMumBuying, props.ticketSelected?.Price) || 0;
+    dateAt.value.value = props.ticketSelected?.dateAt || new Date();
 });
 
-const updatePrice = () => {
-    // Assuming the price is $200 per ticket
-    price.value.value = countTicket.value.value as number * 200;
+onMounted(() => {
+    name.value.value = 'John Doe';
+    ticketType.value.value = props.ticketSelected?.ticketType || '';
+    countTicket.value.value = props.ticketSelected?.miniMumBuying || null;
+    price.value.value = updatePrice(props.ticketSelected?.miniMumBuying, props.ticketSelected?.Price) || 0;
+    dateAt.value.value = props.ticketSelected?.dateAt || new Date();
+})
+
+const updatePrice = (counter: number = 0, price: number = 0) => {
+    return counter * price;
 };
 
 
-function onInvalidSubmit({ values, errors, results }: any) {
-    console.log('onInvalidSubmit():');
-    console.log(values);
-    console.log('Errors: ', errors);
-    console.log('Detailed results: ', results);
-}
+// function onInvalidSubmit({ values, errors, results }: any) {
+//     console.log('onInvalidSubmit():');
+//     console.log(values);
+//     console.log('Errors: ', errors);
+//     console.log('Detailed results: ', results);
+// }
+
 
 
 const submit = handleSubmit(async (values) => {
-    console.log("🚀 ~ countTicket :", countTicket.value.value)
+    console.log("🚀 ~ countTicket :", values)
     // loading.value = true;
 
 });
