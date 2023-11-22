@@ -17,6 +17,8 @@
       :ticketSelected="ticketSelected" :getTicketTransaction="getTicketTransaction"
       :ticketTransaction="ticketTransaction" />
 
+    <detail-modal :getTicketTransaction="getTicketTransaction" :dialog="isModalDetail" title="a" :data="dataModalDetail"
+      :oncloseModalDetail="oncloseModalDetail" />
     <div>
 
       <h1 class="text-4xl font-extrabold">Transction</h1>
@@ -70,6 +72,7 @@
 import { onMounted, onBeforeUnmount, ref } from 'vue';
 import AddTicketDialog from '@/components/AddTicketDialog.vue';
 import TicketCard from '@/components/TicketCard.vue';
+import DetailModal from '@/components/DetailModal.vue';
 import AddTransactionModal from '@/components/AddTransactionModal.vue';
 import dayjs from 'dayjs';
 
@@ -89,17 +92,27 @@ interface TicketType {
   miniMumBuying: number;
   limitPerDay: number;
   Price: number;
-}
-;
+};
 interface TicketSelected {
   [x: string]: any;
   ticketSelected: any;
+};
+
+interface DataItem {
+  [x: string]: any;
+  buyerDate: string;
+  id: string;
+  buyerName: string;
+  ticketType: string;
+  amout: string | number; // Fix the typo here
+  price: string | number;
 }
-;
+
 
 const ticketStore = ref<TicketType[]>([]);
 const ticketSelected = ref<TicketSelected>({ ticketSelected: null });
 const ticketTransaction = ref<TicketType[]>([]);
+const dataModalDetail = ref<DataItem[]>([]);
 const getTicketStore = async (): Promise<any> => {
   try {
     const response = await $fetch("/api/query?col=ticketStore");
@@ -136,7 +149,8 @@ const getTransactionDetail = async (param: string, condition: string): Promise<a
     const { result } = response as { result: any[] };
 
     if (result) {
-      // ticketTransaction.value = result;
+      isModalDetail.value = true;
+      dataModalDetail.value = result;
       console.log("🚀 ~ result:", result)
     } else {
       console.error("Invalid API response format");
@@ -147,6 +161,7 @@ const getTransactionDetail = async (param: string, condition: string): Promise<a
 };
 
 const isModalAddTransOpen = ref(false);
+const isModalDetail = ref(false);
 
 //finction click add transaction
 const clickSelectTicketStore = (ticket: any) => {
@@ -158,6 +173,12 @@ const clickSelectTicketStore = (ticket: any) => {
 const oncloseModalTransaction = () => {
   // Close the modal
   isModalAddTransOpen.value = false;
+};
+
+
+const oncloseModalDetail = () => {
+  // Close the modal
+  isModalDetail.value = false;
 };
 
 </script>
