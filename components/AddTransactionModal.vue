@@ -3,6 +3,8 @@
     <v-dialog v-model="dialog" fluid max-width="700" :persistent="false" @click:outside="handleOutsideClick()">
         <v-card>
             {{ ticketSelected }}
+            --
+            {{ ticketTransaction }}
             <form @submit.prevent="submit">
                 <v-container class="m-10">
                     <h1 class="text-3xl font-bold underline mb-3">
@@ -11,11 +13,7 @@
                     <v-row>
                         <v-col v class="md-6 xs-12 w-full">
                             <v-text-field variant="outlined" v-model="buyerName.value.value"
-                                :error-messages="buyerName.errorMessage.value" label="buyerName"></v-text-field>
-                        </v-col>
-                        <v-col v class="md-6 xs-12 w-full">
-                            <v-text-field variant="outlined" v-model="ticketType.value.value"
-                                :error-messages="ticketType.errorMessage.value" label="ticketType"></v-text-field>
+                                :error-messages="buyerName.errorMessage.value" label="Name"></v-text-field>
                         </v-col>
                     </v-row>
                     <v-row>
@@ -25,13 +23,17 @@
                         </v-col>
                         <v-col v class="md-6 xs-12 w-full">
                             <v-text-field variant="outlined" v-model="buyerDate.value.value" :formatter="format"
-                                :error-messages="buyerDate.errorMessage.value" label="buyerDate"></v-text-field>
+                                :error-messages="buyerDate.errorMessage.value" label="Ticket Date"></v-text-field>
                         </v-col>
                     </v-row>
                     <v-row>
                         <v-col v class="md-6 xs-12 w-full">
-                            <v-text-field variant="outlined" v-model="price.value.value"
-                                :error-messages="price.errorMessage.value" label="Price"></v-text-field>
+                            <v-text-field variant="outlined" v-model="ticketType.value.value" readonly
+                                :error-messages="ticketType.errorMessage.value" label="Type of Ticket"></v-text-field>
+                        </v-col>
+                        <v-col v class="md-6 xs-12 w-full">
+                            <v-text-field variant="outlined" v-model="price.value.value" readonly
+                                :error-messages="price.errorMessage.value" label="Total Price"></v-text-field>
                         </v-col>
                     </v-row>
 
@@ -66,6 +68,7 @@ const props = defineProps({
     dialog: Boolean,
     oncloseModalTransaction: { type: Function as PropType<() => void> },
     getTicketTransaction: { type: Function as PropType<() => void> },
+    ticketTransaction: Array,
     ticketSelected: Object
 });
 const { dialog, ticketSelected } = toRefs(props);
@@ -90,7 +93,7 @@ watch(() => props.ticketSelected, () => {
     ticketType.value.value = props.ticketSelected?.ticketType || '';
     amout.value.value = props.ticketSelected?.miniMumBuying || null;
     price.value.value = updatePrice(props.ticketSelected?.miniMumBuying, props.ticketSelected?.Price) || 0;
-    buyerDate.value.value = props.ticketSelected?.buyerDate || new Date();
+    buyerDate.value.value = format(props.ticketSelected?.buyerDate) || format(new Date());
 });
 
 onMounted(() => {
@@ -98,35 +101,112 @@ onMounted(() => {
     ticketType.value.value = props.ticketSelected?.ticketType || '';
     amout.value.value = props.ticketSelected?.miniMumBuying || null;
     price.value.value = updatePrice(props.ticketSelected?.miniMumBuying, props.ticketSelected?.Price) || 0;
-    buyerDate.value.value = props.ticketSelected?.buyerDate || new Date();
+    buyerDate.value.value = format(props.ticketSelected?.buyerDate) || format(new Date());
 })
 
 const updatePrice = (counter: number = 0, price: number = 0) => {
-    return counter * price;
+    const total = formatPrice(counter * price)
+    return total;
 };
+
+
+const validateForm = (payload: any): boolean => {
+    // Extract relevant information from props
+    const { ticketSelected, ticketTransaction } = props;
+
+    // Ensure ticketTransaction is an array
+    if (!Array.isArray(ticketTransaction)) {
+        alert('Invalid ticket data');
+        return false;
+    }
+
+    // Extract ticket type and amout from the payload
+    const { ticketType, amout, buyerDate } = payload;
+
+    // Validate buyerDate format
+    if (!isDateValid(buyerDate)) {
+        alert('Invalid date format. Please use YYYY-MM-DD.');
+        return false;
+    }
+    // Validate that amout is a positive number
+    const amoutNum = parseInt(amout, 10);
+    if (isNaN(amoutNum) || amoutNum <= 0) {
+        alert('Invalid amount. Please enter a positive number.');
+        return false;
+    }
+
+    // Find tickets in ticketTransaction that match buyerDate and ticketType
+    const matchingTickets = ticketTransaction?.filter(
+        (ticket: any) => ticket.buyerDate === buyerDate && ticket.ticketType === ticketType
+    );
+
+    // Extract limitPerDay and miniMumBuying from the found ticketSelected
+    const limitPerDay = parseInt(ticketSelected?.limitPerDay, 10) || 0;
+    const minimumBuying = parseInt(ticketSelected?.miniMumBuying, 10) || 0;
+
+    // Calculate the total amount from matching tickets
+    const totalAmout = matchingTickets?.reduce((acc: number, ticket: any) => acc + parseInt(ticket.amout, 10), 0);
+
+    // Calculate the remaining amount that the user can fill
+    const remainingAmout = Math.max(limitPerDay - totalAmout, 0);
+
+    // Check if the available amount is zero (sold out)
+    if (remainingAmout === 0) {
+        alert('Sold Out. No more available.');
+        return false;
+    }
+
+    // Ensure the total amout does not exceed the limitPerDay and is above minimumBuying
+    if (totalAmout + amoutNum > limitPerDay || amoutNum < minimumBuying) {
+        alert(`Exceeds limit or below minimum. Fill up to ${remainingAmout} more.`);
+        return false;
+    }
+
+    // If all conditions pass, return true
+    return true;
+};
+
 
 const addTicketTransaction = async (payload: object): Promise<any> => {
 
     loading.value = true;
     try {
-        // Validate form fields
-        // if (!validateForm()) {
-        //     console.error("Form validation failed");
-        //     return;
+
+        //example payload
+        // {
+        //     "buyerName": "John Doe",
+        //         "amout": "2",
+        //             "price": 10000,
+        //                 "ticketType": "A",
+        //                     "buyerDate": "2023-11-22",
+        //                         "id": "2023-11-2210000"
         // }
 
-        const { result } = await $fetch("/api/add?col=ticketTransaction", {
-            method: "POST",
-            body: JSON.stringify(payload),
-        });
-        handleOutsideClick();
-        getTicketTransaction();
-        loading.value = false;
-        return result;
+        // Validate form fields
+        if (!validateForm(payload)) {
+            console.error("Form validation failed");
+            loading.value = false;
+            return;
+        } else {
+            console.log("CALL API")
+            const { result } = await $fetch("/api/add?col=ticketTransaction", {
+                method: "POST",
+                body: JSON.stringify(payload),
+            });
+            handleOutsideClick();
+            getTicketTransaction();
+            loading.value = false;
+            return result;
+        }
     } catch (error) {
         loading.value = false;
-        console.log((error as Error).message);
+        alert((error as Error).message);
     }
+};
+
+const isDateValid = (dateString: string): boolean => {
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    return regex.test(dateString);
 };
 
 
@@ -151,6 +231,10 @@ const format = (value: string | Date): string => {
     return dayjs(value).format('YYYY-MM-DD'); // Adjust the format as needed
 };
 
+// Format the price value with commas
+const formatPrice = (value: number): string => {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
 //for type script support
 const handleOutsideClick = () => {
     if (props.oncloseModalTransaction) {
