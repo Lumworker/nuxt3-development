@@ -1,6 +1,6 @@
 <template>
     <div class="text-center">
-        <v-btn prepend-icon=" mdi-plus-thick" color="success" @click="dialog = true">
+        <v-btn prepend-icon=" mdi-plus-thick" color="info" @click="dialog = true">
             <template v-slot:prepend>
                 <v-icon @click="dialog = true"></v-icon>
             </template>
@@ -44,7 +44,7 @@
                     </form>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn color="primary" block @click="addMasterTicketStore">confrim</v-btn>
+                    <v-btn color="primary" variant="flat" block @click="addMasterTicketStore">Submit</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

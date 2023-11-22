@@ -24,7 +24,7 @@
                                 :error-messages="amout.errorMessage.value" label="amout"></v-text-field>
                         </v-col>
                         <v-col v class="md-6 xs-12 w-full">
-                            <v-text-field variant="outlined" v-model="buyerDate.value.value"
+                            <v-text-field variant="outlined" v-model="buyerDate.value.value" :formatter="format"
                                 :error-messages="buyerDate.errorMessage.value" label="buyerDate"></v-text-field>
                         </v-col>
                     </v-row>
@@ -40,7 +40,7 @@
                             <v-card-actions>
                                 <v-btn type="submit" block class="text-none mb-4" color="indigo-darken-3" size="x-large"
                                     :disabled="loading" :loading="loading" variant="flat">
-                                    Verify and continue
+                                    Submit
                                 </v-btn>
 
                             </v-card-actions>
@@ -56,7 +56,10 @@
 <script setup lang="ts">
 import { defineProps, onMounted, ref } from 'vue';
 import { useField, useForm, ErrorMessage } from 'vee-validate'
+import dayjs from 'dayjs';
+
 const { handleSubmit } = useForm({})
+
 
 // Props
 const props = defineProps({
@@ -74,6 +77,7 @@ const ticketType = useField('ticketType');
 const amout = useField('amout'); // Example default value
 const buyerDate = useField('buyerDate'); // Example default value
 const price = useField('price'); // Example default value
+
 
 
 
@@ -141,6 +145,11 @@ const submit = handleSubmit(async (values) => {
     }
 
 });
+
+const format = (value: string | Date): string => {
+    // Use dayjs.js to format the date
+    return dayjs(value).format('YYYY-MM-DD'); // Adjust the format as needed
+};
 
 //for type script support
 const handleOutsideClick = () => {

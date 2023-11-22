@@ -39,7 +39,7 @@
         <tbody>
           <tr v-for="item in ticketTransaction" :key="item.id">
             <td>{{ item.buyerName }}</td>
-            <td>{{ dayjs(item.buyerDate).format('YYYY-MM-DD HH:mm:ss') }}</td>
+            <td>{{ dayjs(item.buyerDate).format('YYYY-MM-DD') }}</td>
             <td>{{ item.ticketType }}</td>
             <td>{{ item.amout }}</td>
           </tr>
