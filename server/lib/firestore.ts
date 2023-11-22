@@ -28,6 +28,24 @@ export const queryByCollection = async (col: string) => {
   return docs;
 };
 
+
+export const queryByCollectionCondition = async (col: string,Param:string,condition:string) => {
+  // @ts-ignore
+  const colRef = collection(firestoreDb, col);
+
+    const q = query(
+    colRef,
+    where(Param, "==", condition),
+  );
+  const snapshot = await getDocs(q);
+  const docs = Array.from(snapshot.docs).map((doc) => {
+    return {
+      ...doc.data()
+    };
+  });
+
+  return docs;
+};
 export const set = async (col: string, document: Object) => {
   await setDoc(doc(collection(firestoreDb, col)), document, { merge: true });
 };

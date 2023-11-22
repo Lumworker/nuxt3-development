@@ -20,29 +20,44 @@
     <div>
 
       <h1 class="text-4xl font-extrabold">Transction</h1>
+      <h5 class="text-xl ">สามารถคลิกข้อมูลในตารางเพื่อดูรายละเอียด</h5>
+      <h5 class="">*เช่น คลิกที่ชื่อเพื่อดูตั๋วทั้งหมดที่คนดังกล่าวเป็นเจ้าของ</h5>
+      <h5 class="">*เช่น คลิกที่ประเภทตั๋วนั้นๆ เพื่อดูตั๋วทั้งหมดที่ขายออก</h5>
+      <h5 class="">*เช่น คลิกที่วันเพื่อดูตั๋วทั้งหมดในวันนั้น</h5>
       <v-table fixed-header height="300px">
         <thead>
           <tr>
             <th class="text-left">
-              buyerName
+              Name
             </th>
             <th class="text-left">
-              buyerDate
+              Ticket Date
             </th>
             <th class="text-left">
-              ticketType
+              Type
             </th>
             <th class="text-left">
-              amout
+              Total amout
             </th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="item in ticketTransaction" :key="item.id">
-            <td>{{ item.buyerName }}</td>
-            <td>{{ dayjs(item.buyerDate).format('YYYY-MM-DD') }}</td>
-            <td>{{ item.ticketType }}</td>
-            <td>{{ item.amout }}</td>
+            <td @click="getTransactionDetail('buyerName', item.buyerName)">
+              {{
+                item.buyerName
+              }}</td>
+            <td @click="getTransactionDetail('buyerDate', item.buyerDate)">
+              {{
+                dayjs(item.buyerDate).format('YYYY-MM-DD')
+              }}
+            </td>
+            <td @click="getTransactionDetail('ticketType', item.ticketType)">
+              {{ item.ticketType }}
+            </td>
+            <td>
+              {{ item.amout }}
+            </td>
           </tr>
         </tbody>
       </v-table>
@@ -107,6 +122,22 @@ const getTicketTransaction = async (): Promise<any> => {
 
     if (result) {
       ticketTransaction.value = result;
+    } else {
+      console.error("Invalid API response format");
+    }
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
+
+const getTransactionDetail = async (param: string, condition: string): Promise<any> => {
+  try {
+    const response = await $fetch(`/api/querycondition?col=ticketTransaction&param=${param}&condition=${condition}`);
+    const { result } = response as { result: any[] };
+
+    if (result) {
+      // ticketTransaction.value = result;
+      console.log("🚀 ~ result:", result)
     } else {
       console.error("Invalid API response format");
     }
