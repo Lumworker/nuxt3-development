@@ -31,13 +31,13 @@
         <thead>
           <tr>
             <th class="text-left">
-              Name
+              Ticket Type
             </th>
             <th class="text-left">
               Ticket Date
             </th>
             <th class="text-left">
-              Type
+              Name
             </th>
             <th class="text-left">
               Total amout
