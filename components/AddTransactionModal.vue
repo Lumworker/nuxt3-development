@@ -2,9 +2,9 @@
 <template>
     <v-dialog v-model="dialog" fluid max-width="700" :persistent="false" @click:outside="handleOutsideClick()">
         <v-card>
-            {{ ticketSelected }}
+        <!-- {{ ticketSelected }}
             --
-            {{ ticketTransaction }}
+                {{ ticketTransaction }} -->
             <form @submit.prevent="submit">
                 <v-container class="m-10">
                     <h1 class="text-3xl font-bold underline mb-3">
