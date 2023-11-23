@@ -1,4 +1,5 @@
 <template #default>
+  <Loading :overlay="overlay" />
   <v-app>
     <h1 class="text-4xl font-extrabold">Click Ticket To Add transction</h1>
     <v-container>
@@ -44,19 +45,19 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in ticketTransaction" :key="item.id">
-            <td @click="getTransactionDetail('buyerName', item.buyerName)">
-              {{
-                item.buyerName
-              }}</td>
+          <tr v-for="item in ticketTransaction" :key="item.id" class="cursor-pointer">
+            <td @click="getTransactionDetail('ticketType', item.ticketType)">
+              {{ item.ticketType }}
+            </td>
             <td @click="getTransactionDetail('buyerDate', item.buyerDate)">
               {{
                 dayjs(item.buyerDate).format('YYYY-MM-DD')
               }}
             </td>
-            <td @click="getTransactionDetail('ticketType', item.ticketType)">
-              {{ item.ticketType }}
-            </td>
+            <td @click="getTransactionDetail('buyerName', item.buyerName)">
+              {{
+                item.buyerName
+              }}</td>
             <td>
               {{ item.amout }}
             </td>
@@ -74,9 +75,11 @@ import AddTicketDialog from '@/components/AddTicketDialog.vue';
 import TicketCard from '@/components/TicketCard.vue';
 import DetailModal from '@/components/DetailModal.vue';
 import AddTransactionModal from '@/components/AddTransactionModal.vue';
+import Loading from '@/components/Loading.vue';
 import dayjs from 'dayjs';
 
 onMounted(async () => {
+
   await getTicketStore();
   await getTicketTransaction();
 
@@ -93,6 +96,7 @@ interface TicketType {
   limitPerDay: number;
   Price: number;
 };
+
 interface TicketSelected {
   [x: string]: any;
   ticketSelected: any;
@@ -108,22 +112,26 @@ interface DataItem {
   price: string | number;
 }
 
-
 const ticketStore = ref<TicketType[]>([]);
 const ticketSelected = ref<TicketSelected>({ ticketSelected: null });
 const ticketTransaction = ref<TicketType[]>([]);
 const dataModalDetail = ref<DataItem[]>([]);
+const overlay = ref<boolean>(false);
+
 const getTicketStore = async (): Promise<any> => {
   try {
+    overlay.value = true
     const response = await $fetch("/api/query?col=ticketStore");
     const { result } = response as { result: TicketType[] };
 
+    overlay.value = false
     if (result) {
       ticketStore.value = result.slice().sort((a, b) => a.ticketType.localeCompare(b.ticketType));
     } else {
       console.error("Invalid API response format");
     }
   } catch (error) {
+    overlay.value = false
     console.error("Error fetching data:", error);
   }
 };
